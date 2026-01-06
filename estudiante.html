@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGA Estudiante | IPMHU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* PALETA DE COLORES INSTITUCIONAL */
+            --primary: #003087;       /* Azul Institucional */
+            --primary-dark: #00205b;  /* Azul Oscuro */
+            --accent: #CE1126;        /* Rojo Bandera */
+            --secondary: #00A0E3;     /* Azul Claro */
+            --bg: #F4F6F9;            /* Fondo Gris */
+            --surface: #ffffff;       /* Blanco */
+            --text-main: #333333;     
+            --text-light: #666666;    
+            --border: #e0e0e0;        
+            --success: #008E38;       
+            --danger: #D32F2F;        
+            --shadow: 0 4px 12px rgba(0, 48, 135, 0.08);
+            --shadow-lg: 0 15px 30px rgba(0, 48, 135, 0.15);
+        }
+
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+
+        /* LOGO */
+        .logo-img { max-height: 80px; width: auto; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto; }
+        .sidebar-logo { max-height: 60px; width: auto; margin-bottom: 20px; display: block; }
+
+        /* LOGIN */
+        #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); display: flex; align-items: center; justify-content: center; z-index: 50; }
+        .login-card { background: var(--surface); padding: 3rem; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); text-align: center; border-top: 5px solid var(--accent); }
+
+        /* LAYOUT */
+        .wrapper { display: flex; width: 100%; height: 100%; }
+        .sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 16px; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+        .top-bar { background: var(--primary); height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .scroll-area { padding: 32px; overflow-y: auto; flex: 1; }
+        .card { background: var(--surface); padding: 28px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 20px; }
+
+        /* ELEMENTOS UI */
+        .nav-btn { background: transparent; color: var(--text-light); text-align: left; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; display: block; width: 100%; border: none; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; font-weight: 500; }
+        .nav-btn:hover { background: #f0f4ff; color: var(--primary); }
+        .nav-btn.active { background: var(--primary); color: white; font-weight: 600; box-shadow: 0 4px 10px rgba(0, 48, 135, 0.2); }
+        
+        input, select { width: 100%; padding: 12px 14px; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; background: #fcfcfc; font-family: inherit; }
+        input[readonly] { background: #f1f5f9; color: var(--text-light); }
+        
+        button { width: 100%; padding: 12px 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        /* TABLAS */
+        .web-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; }
+        .web-table th { text-align: left; padding: 12px; background: #f1f5f9; border-bottom: 2px solid var(--primary); color: var(--primary); font-weight: 700; font-size: 0.85rem; }
+        .web-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        label { display: block; font-weight: 700; font-size: 0.8rem; margin-bottom: 5px; color: var(--primary); text-transform: uppercase; }
+
+        .hidden { display: none !important; }
+        .btn-soporte { position: fixed; bottom: 30px; right: 30px; background: #25D366; color: white; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); display: flex; align-items: center; gap: 8px; }
+
+        /* MÓVIL */
+        .menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: white; margin-right: 10px; padding: 0; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; }
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -300px; top: 0; bottom: 0; z-index: 50; transition: left 0.3s ease; }
+            .sidebar.active { left: 0; }
+            .sidebar-overlay.active { display: block; }
+            .menu-btn { display: block; }
+            .top-bar { padding: 0 16px; }
+            .scroll-area { padding: 16px; }
+            .card { padding: 16px; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="login-overlay">
+    <div class="login-card">
+        <img src="file:///C:/Users/robel/OneDrive%20-%20Ministerio%20de%20Educaci%C3%B3n%20de%20la%20Rep%C3%BAblica%20Dominicana/Escritorio/Logos/logo.png" alt="Logo" class="logo-img">
+        <h2 style="color:var(--primary); margin:0 0 5px 0; font-size:1.5rem; font-weight:700;">Portal Estudiantil</h2>
+        <p style="color:var(--text-light); margin-bottom:25px; font-size:0.9rem">Consulta Académica</p>
+        <input type="text" id="u-id" placeholder="ID Estudiante (Ej: EST0001)">
+        <input type="password" id="u-pass" placeholder="Contraseña">
+        <button class="btn-primary" onclick="login()">INGRESAR</button>
+    </div>
+</div>
+
+<div id="app" class="hidden wrapper">
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMenu()"></div>
+    <aside class="sidebar" id="sidebar">
+        <div style="text-align:center;">
+            <img src="file:///C:/Users/robel/OneDrive%20-%20Ministerio%20de%20Educaci%C3%B3n%20de%20la%20Rep%C3%BAblica%20Dominicana/Escritorio/Logos/logo.png" alt="Logo" class="sidebar-logo">
+        </div>
+        <nav style="margin-top:10px;">
+            <button class="nav-btn active" onclick="nav('perfil', this)">Perfil Estudiantil</button>
+            <button class="nav-btn" onclick="nav('reportes', this)">Reportes Conducta</button>
+            <button class="nav-btn" onclick="nav('asistencia', this)">Asistencia</button>
+            <button class="nav-btn" onclick="nav('calificaciones', this)">Calificaciones</button>
+            <button class="nav-btn" onclick="nav('rendimiento', this)">Rendimiento (RA)</button>
+            <button class="nav-btn" onclick="nav('periodos', this)">Periodos (P)</button>
+            <button class="nav-btn" onclick="nav('excusas', this)">Excusas</button>
+        </nav>
+        <button class="nav-btn" onclick="location.reload()" style="margin-top:auto; color:var(--accent); font-weight: 600;">Cerrar Sesión</button>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-bar">
+            <div style="display:flex; align-items:center;">
+                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                <h2 style="font-size:1.1rem; margin:0; font-weight:500;">SGA | Estudiante</h2>
+            </div>
+            <div id="u-name" style="background:rgba(255,255,255,0.2); padding:6px 16px; border-radius:20px; font-weight:500; font-size:0.85rem;">...</div>
+        </header>
+
+        <div class="scroll-area">
+            <div id="content"></div>
+        </div>
+    </div>
+</div>
+
+<a href="https://wa.me/18294789906" target="_blank" class="btn-soporte"><span>Soporte Técnico</span></a>
+
+<script>
+    // ⚠️ ASEGÚRATE DE QUE ESTA URL SEA LA MISMA QUE EN LOS OTROS PORTALES
+    const API = "https://script.google.com/macros/s/AKfycbxa-S6CyybfZny7gnSPiIVSqTA3HwZVjeEzxMkRw4gQ926KKLnuOIiR5R66gCtoRAQOvQ/exec"; 
+    let STUDENT = null;
+    let CACHE = {}; // Para guardar datos y no recargar
+
+    async function login() {
+        const id = document.getElementById('u-id').value;
+        const pass = document.getElementById('u-pass').value;
+        
+        if(!id || !pass) return alert("Complete los campos");
+        
+        // Login simple: ID debe ser igual al Pass (o lógica que definas en GAS)
+        const res = await fetch(`${API}?action=loginStudent&id=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}`).then(r=>r.json());
+        
+        if(res.success) {
+            STUDENT = res.student;
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('u-name').innerText = STUDENT.Nombre_Completo;
+            nav('perfil', document.querySelector('.nav-btn'));
+        } else {
+            alert("Credenciales incorrectas.");
+        }
+    }
+
+    function toggleMenu() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
+    }
+
+    async function nav(seccion, btn) {
+        if(btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        const c = document.getElementById('content');
+        c.innerHTML = '<div style="text-align:center; color:var(--text-light)">Cargando datos...</div>';
+
+        if(window.innerWidth <= 768) toggleMenu(); // Cerrar menú en móvil
+
+        // --- PERFIL ---
+        if(seccion === 'perfil') {
+            const s = STUDENT;
+            c.innerHTML = `
+                <div class="card">
+                    <h3 style="color:var(--primary); border-bottom:2px solid var(--border); padding-bottom:10px;">Mi Perfil</h3>
+                    <div class="grid" style="margin-top:20px;">
+                        <div><label>ID Sistema</label><input value="${s.ID_Sistema}" readonly></div>
+                        <div><label>Nombre Completo</label><input value="${s.Nombre_Completo}" readonly></div>
+                        <div><label>Curso</label><input value="${s.Curso}" readonly></div>
+                        <div><label>Edad</label><input value="${s.Edad}" readonly></div>
+                        <div><label>Fecha Nacimiento</label><input value="${new Date(s.Fecha_Nacimiento).toLocaleDateString()}" readonly></div>
+                    </div>
+                    <div class="grid" style="margin-top:20px;">
+                        <div><label>Padre</label><input value="${s.Nombre_Padre} (${s.Tel_Padre})" readonly></div>
+                        <div><label>Madre</label><input value="${s.Nombre_Madre} (${s.Tel_Madre})" readonly></div>
+                    </div>
+                </div>`;
+        }
+
+        // --- REPORTES ---
+        else if(seccion === 'reportes') {
+            const data = await fetchData('getStudentReports');
+            c.innerHTML = `
+                <div class="grid">
+                    <div class="card" style="text-align:center; background:var(--primary); color:white;">
+                        <h1 style="font-size:4rem; margin:0;">${data.length}</h1>
+                        <p style="opacity:0.8">REPORTES TOTALES</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="color:var(--primary)">Detalle de Incidencias</h3>
+                        ${data.length ? renderTable(data, ['Fecha', 'Tipo', 'Descripción', 'Docente'], ['Fecha', 'Tipo', 'Descripcion', 'Docente']) : '<p>No tienes reportes registrados.</p>'}
+                    </div>
+                </div>`;
+        }
+
+        // --- ASISTENCIA ---
+        else if(seccion === 'asistencia') {
+            const data = await fetchData('getStudentAttendance');
+            const materias = [...new Set(data.map(d => d.Materia))];
+            
+            c.innerHTML = `
+                <div class="card">
+                    <h3 style="color:var(--primary)">Consulta de Asistencia</h3>
+                    <select id="filtro-mat" onchange="filtrarTabla('tabla-asist', 1, this.value)">
+                        <option value="">-- Ver Todas las Materias --</option>
+                        ${materias.map(m => `<option value="${m}">${m}</option>`).join('')}
+                    </select>
+                    <div id="tabla-asist-container">
+                        ${renderTable(data, ['Fecha', 'Materia', 'Estado', 'Docente'], ['Fecha', 'Materia', 'Estado', 'Docente'], 'tabla-asist')}
+                    </div>
+                </div>`;
+        }
+
+        // --- CALIFICACIONES (DETALLE) ---
+        else if(seccion === 'calificaciones') {
+            const data = await fetchData('getStudentGradesDetail');
+            const materias = [...new Set(data.map(d => d.Modulo))];
+            
+            c.innerHTML = `
+                <div class="card">
+                    <h3 style="color:var(--primary)">Calificaciones Detalladas</h3>
+                    <div class="grid">
+                        <select id="filtro-cal-mat" onchange="filtrarTabla('tabla-cal', 0, this.value)">
+                            <option value="">-- Todas las Materias --</option>
+                            ${materias.map(m => `<option value="${m}">${m}</option>`).join('')}
+                        </select>
+                        <select onchange="filtrarTabla('tabla-cal', 1, this.value)">
+                            <option value="">-- Todos los Periodos --</option>
+                            <option value="P1">P1</option><option value="P2">P2</option><option value="P3">P3</option><option value="P4">P4</option>
+                        </select>
+                    </div>
+                    ${renderTable(data, ['Materia/Modulo', 'Periodo', 'Actividad', 'Nota', 'Maximo', 'Observacion'], ['Modulo', 'Periodo', 'Actividad', 'Nota', 'Maximo', 'Observacion'], 'tabla-cal')}
+                </div>`;
+        }
+
+        // --- RENDIMIENTO (RA) ---
+        else if(seccion === 'rendimiento') {
+            const data = await fetchData('getStudentGradesRA');
+            const materias = [...new Set(data.map(d => d.Modulo))];
+            
+            c.innerHTML = `
+                <div class="card">
+                    <h3 style="color:var(--primary)">Rendimiento Académico (RA)</h3>
+                    <div class="grid">
+                        <select id="filtro-ra-mat" onchange="filtrarTabla('tabla-ra', 0, this.value)">
+                            <option value="">-- Todos los Módulos --</option>
+                            ${materias.map(m => `<option value="${m}">${m}</option>`).join('')}
+                        </select>
+                    </div>
+                    ${renderTable(data, ['Módulo', 'RA', 'Nota_Final', 'Nota_Max', 'Docente'], ['Modulo', 'RA', 'Nota_Final', 'Nota_Max', 'Docente'], 'tabla-ra')}
+                </div>`;
+        }
+
+        // --- PERIODOS (P) ---
+        else if(seccion === 'periodos') {
+            const data = await fetchData('getStudentGradesP');
+            c.innerHTML = `
+                <div class="card">
+                    <h3 style="color:var(--primary)">Calificaciones por Periodo</h3>
+                    ${renderTable(data, ['Materia', 'P1', 'P2', 'P3', 'P4', 'P_FINAL', 'Docente'], ['Materia', 'P1', 'P2', 'P3', 'P4', 'P_FINAL', 'Docente'])}
+                </div>`;
+        }
+
+        // --- EXCUSAS ---
+        else if(seccion === 'excusas') {
+            const data = await fetchData('getStudentExcuses');
+            const hoy = new Date(); hoy.setHours(0,0,0,0);
+            const activas = data.filter(e => new Date(e.Fecha_Fin) >= hoy);
+            const inactivas = data.filter(e => new Date(e.Fecha_Fin) < hoy);
+
+            c.innerHTML = `
+                <div class="card">
+                    <h3 style="color:var(--success)">Excusas Activas</h3>
+                    ${activas.length ? renderTable(activas, ['Desde', 'Hasta', 'Motivo', 'Registrado_Por'], ['Desde', 'Hasta', 'Motivo', 'Registrado_Por']) : '<p>No tienes excusas vigentes.</p>'}
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--text-light)">Historial de Excusas</h3>
+                    ${inactivas.length ? renderTable(inactivas, ['Desde', 'Hasta', 'Motivo', 'Registrado_Por'], ['Desde', 'Hasta', 'Motivo', 'Registrado_Por']) : '<p>No hay historial.</p>'}
+                </div>`;
+        }
+    }
+
+    async function fetchData(action) {
+        if(CACHE[action]) return CACHE[action];
+        const res = await fetch(`${API}?action=${action}&id=${STUDENT.ID_Sistema}`).then(r=>r.json());
+        if(res.success) {
+            CACHE[action] = res.data;
+            return res.data;
+        }
+        return [];
+    }
+
+    function renderTable(data, headers, keys, idTable = '') {
+        if(!data || data.length === 0) return '<p>No hay datos disponibles.</p>';
+        let html = `<table class="web-table" id="${idTable}"><thead><tr>`;
+        headers.forEach(h => html += `<th>${h}</th>`);
+        html += `</tr></thead><tbody>`;
+        
+        data.forEach(row => {
+            html += `<tr>`;
+            keys.forEach(k => {
+                let val = row[k];
+                if (val === undefined || val === null) val = '';
+                
+                if ((k.includes('Fecha') || k === 'Desde' || k === 'Hasta') && val) {
+                    try { 
+                        const d = new Date(val);
+                        if(!isNaN(d.getTime())) val = d.toLocaleDateString(); 
+                    } catch(e){}
+                }
+                if (k === 'Estado') {
+                    const color = val === 'P' ? 'green' : (val === 'A' ? 'red' : 'orange');
+                    val = `<span style="color:${color}; font-weight:bold">${val}</span>`;
+                }
+                html += `<td>${val}</td>`;
+            });
+            html += `</tr>`;
+        });
+        html += `</tbody></table>`;
+        return html;
+    }
+
+    function filtrarTabla(idTabla, colIndex, valor) {
+        const table = document.getElementById(idTabla);
+        const tr = table.getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName("td")[colIndex]; // Ajustar índice según columna
+            // Buscamos la columna correcta iterando si es necesario, o usando el índice fijo
+            // En este caso simple, buscamos texto en toda la fila si valor es genérico, o columna específica
+            if (td) {
+                const txtValue = td.textContent || td.innerText;
+                if (valor === "" || txtValue === valor) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
